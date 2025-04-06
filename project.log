@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/thomasedwards/projects/econ3900_analysis/project.log
   log type:  text
- opened on:   6 Apr 2025, 11:59:33
+ opened on:   6 Apr 2025, 12:51:01
 
 . 
 . ******************************
@@ -11326,129 +11326,77 @@ c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex |   29856.08   10151.69    
 
 
 . 
-. 
-. // Experiment with the Human Capital 
-. xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inf
-> lation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate
->  liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth
->  hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.Economic
-> FreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.second
-> ary_sector_fdi#c.tertiary_enrollment c.tertiary_sector_fdi#c.tertiary_enrollment gdp_growth, fe
-
-Regression with Driscoll-Kraay standard errors   Number of obs     =       454
-Method: Fixed-effects regression                 Number of groups  =        68
-Group variable (i): iso_id                       F( 33,     6)     =     69.53
-maximum lag: 2                                   Prob > F          =    0.0000
-                                                 within R-squared  =    0.4399
-
-----------------------------------------------------------------------------------------------------------------------
-                                                     |             Drisc/Kraay
-                                        gdp_pc_level | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------------------------------------------+----------------------------------------------------------------
-                                  primary_sector_fdi |    -261491   50539.43    -5.17   0.002    -385156.6   -137825.5
-                                secondary_sector_fdi |  -301250.4   186987.2    -1.61   0.158    -758791.7    156290.9
-                                 tertiary_sector_fdi |    89125.1   16560.65     5.38   0.002     48602.66    129647.5
-                                                gini |  -148.1451   49.33494    -3.00   0.024    -268.8634   -27.42687
-                                             tax_rev |   105.5286   167.6509     0.63   0.552    -304.6983    515.7555
-                                       save_perc_gdp |  -138.1381   21.73745    -6.35   0.001    -191.3277   -84.94847
-                                       interest_rate |  -49.75478   18.47352    -2.69   0.036    -94.95785   -4.551708
-                                           inflation |   136.3309   44.01553     3.10   0.021     28.62879     244.033
-                                             exports |   355.2547   88.06268     4.03   0.007     139.7731    570.7363
-                                             imports |  -435.6333   144.6543    -3.01   0.024    -789.5897   -81.67688
-                                      con_corruption |   970.7558   613.7427     1.58   0.165    -531.0186     2472.53
-                                             gov_exp |   110.2766   143.7031     0.77   0.472    -241.3522    461.9054
-                                        cen_gov_debt |  -190.6244   15.92608   -11.97   0.000    -229.5941   -151.6547
-                                        curr_acc_bal |   61.03211   63.01032     0.97   0.370     -93.1486    215.2128
-                                    stock_market_tor |   5.576245   11.84502     0.47   0.654    -23.40746    34.55995
-                                        rol_estimate |   1887.884   1578.265     1.20   0.277    -1973.991    5749.759
-                                                 gcf |   515.4481   82.86601     6.22   0.001     312.6823     718.214
-                                   unemployment_rate |  -279.1871   55.86658    -5.00   0.002    -415.8877   -142.4865
-                                  liquid_liabilities |  -19.19239   45.19637    -0.42   0.686    -129.7839    91.39914
-                           dom_credit_to_private_sec |   6.369614    6.96444     0.91   0.396    -10.67176    23.41099
-                           stock_market_value_traded |  -34.46763   23.50229    -1.47   0.193    -91.97565    23.04039
-                                bank_deposits_to_gdp |   -144.326   55.54833    -2.60   0.041    -280.2478   -8.404116
-                                  remittance_inflows |   650.5184   297.3886     2.19   0.071    -77.16525    1378.202
-                                         prod_growth |   6086.653   2827.061     2.15   0.075    -830.9175    13004.22
-                                           hdi_index |   6797.366   28543.39     0.24   0.820    -63045.78    76640.52
-                         EconomicFreedomSummaryIndex |   1915.222   1194.751     1.60   0.160    -1008.227    4838.672
-                                                     |
-  c.primary_sector_fdi#c.EconomicFreedomSummaryIndex |   46336.21   8810.861     5.26   0.002     24776.81    67895.61
-                                                     |
-c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex |   43546.62   31832.53     1.37   0.220    -34344.77      121438
-                                                     |
- c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex |  -13811.73   2681.505    -5.15   0.002    -20373.14   -7250.327
-                                                     |
-          c.primary_sector_fdi#c.tertiary_enrollment |  -1129.439   334.2344    -3.38   0.015    -1947.281   -311.5967
-                                                     |
-        c.secondary_sector_fdi#c.tertiary_enrollment |  -485.4374    1048.91    -0.46   0.660    -3052.027    2081.152
-                                                     |
-         c.tertiary_sector_fdi#c.tertiary_enrollment |   223.7145   62.78495     3.56   0.012     70.08526    377.3438
-                                                     |
-                                          gdp_growth |  -178.6021    72.6786    -2.46   0.049    -356.4403   -.7639833
-                                               _cons |   21587.99   18296.95     1.18   0.283    -23183.02       66359
-----------------------------------------------------------------------------------------------------------------------
-
-
-. 
-. // Experiment with the Human Capital DROPPING: IMPORTS CONTROL OF CORRUPTION, BANK DEPOSITS and HDI to validate findings in
->  the absence of multicolinearity
+. // Driscoll-Kraay Standard Errors to Correct for both Autocorrelation and heteroskedacticity DROPPING IMPORTS CONTROL OF CO
+> RRUPTION, BANK DEPOSITS and HDI to validate findings in the absence of multicolinearity
 . xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inf
 > lation exports gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom
 > _credit_to_private_sec stock_market_value_traded remittance_inflows prod_growth EconomicFreedomSummaryIndex c.primary_secto
 > r_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFr
-> eedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.secondary_sector_fdi#c.tertiary_enrollment c.tertiary_sector
-> _fdi#c.tertiary_enrollment gdp_growth, fe
+> eedomSummaryIndex gdp_growth, fe
 
 Regression with Driscoll-Kraay standard errors   Number of obs     =       454
 Method: Fixed-effects regression                 Number of groups  =        68
-Group variable (i): iso_id                       F( 29,     6)     =     43.38
-maximum lag: 2                                   Prob > F          =    0.0001
-                                                 within R-squared  =    0.3995
+Group variable (i): iso_id                       F( 26,     6)     =     13.01
+maximum lag: 2                                   Prob > F          =    0.0021
+                                                 within R-squared  =    0.3673
 
 ----------------------------------------------------------------------------------------------------------------------
                                                      |             Drisc/Kraay
                                         gdp_pc_level | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
 -----------------------------------------------------+----------------------------------------------------------------
-                                  primary_sector_fdi |  -336839.6   85158.02    -3.96   0.007    -545213.8   -128465.4
-                                secondary_sector_fdi |  -332072.8   193180.8    -1.72   0.136    -804769.2    140623.6
-                                 tertiary_sector_fdi |   105122.5   14528.17     7.24   0.000     69573.37    140671.7
-                                                gini |  -85.11032   17.69737    -4.81   0.003    -128.4142   -41.80642
-                                             tax_rev |   55.10775   180.1129     0.31   0.770    -385.6127    495.8282
-                                       save_perc_gdp |  -52.09481   31.74415    -1.64   0.152    -129.7699    25.58032
-                                       interest_rate |  -92.24325   38.80446    -2.38   0.055    -187.1943    2.707829
-                                           inflation |    141.291   42.06858     3.36   0.015     38.35287    244.2291
-                                             exports |  -9.611372   69.01132    -0.14   0.894     -178.476    159.2532
-                                             gov_exp |  -135.5276   185.4161    -0.73   0.492    -589.2245    318.1692
-                                        cen_gov_debt |  -196.7044    21.7889    -9.03   0.000    -250.0199   -143.3889
-                                        curr_acc_bal |   263.2999   56.02682     4.70   0.003     126.2072    400.3926
-                                    stock_market_tor |   3.364373   10.11352     0.33   0.751    -21.38251    28.11126
-                                        rol_estimate |   2673.018   1569.844     1.70   0.140    -1168.252    6514.288
-                                                 gcf |   315.4868   52.57089     6.00   0.001     186.8505    444.1231
-                                   unemployment_rate |  -281.2908   62.40094    -4.51   0.004    -433.9805   -128.6012
-                                  liquid_liabilities |  -100.4579   29.21105    -3.44   0.014    -171.9347     -28.981
-                           dom_credit_to_private_sec |   12.21345   5.760408     2.12   0.078     -1.88176    26.30866
-                           stock_market_value_traded |  -36.22204   24.10712    -1.50   0.184    -95.21003    22.76595
-                                  remittance_inflows |   154.9704   105.7241     1.47   0.193    -103.7271    413.6679
-                                         prod_growth |   5913.134   2355.754     2.51   0.046     148.8121    11677.46
-                         EconomicFreedomSummaryIndex |   1622.765   788.1795     2.06   0.085    -305.8411     3551.37
+                                  primary_sector_fdi |  -144473.3   50933.07    -2.84   0.030    -269102.1   -19844.61
+                                secondary_sector_fdi |  -324715.9   114756.2    -2.83   0.030    -605514.2   -43917.58
+                                 tertiary_sector_fdi |   50788.47    20139.3     2.52   0.045     1509.377    100067.6
+                                                gini |  -121.3612    21.2161    -5.72   0.001    -173.2751   -69.44724
+                                             tax_rev |   69.93079   184.7565     0.38   0.718     -382.152    522.0136
+                                       save_perc_gdp |  -72.53262   36.92051    -1.96   0.097    -162.8739    17.80862
+                                       interest_rate |  -84.77601    37.1568    -2.28   0.063    -175.6954    6.143398
+                                           inflation |   106.9757   32.58109     3.28   0.017      27.2526    186.6987
+                                             exports |  -10.45144   56.76059    -0.18   0.860    -149.3396    128.4367
+                                             gov_exp |  -185.6454   210.6094    -0.88   0.412    -700.9881    329.6972
+                                        cen_gov_debt |  -196.7698   21.81952    -9.02   0.000    -250.1603   -143.3794
+                                        curr_acc_bal |   270.6505   58.69629     4.61   0.004     127.0258    414.2751
+                                    stock_market_tor |   1.314824   11.04874     0.12   0.909    -25.72048    28.35012
+                                        rol_estimate |   1826.013   1837.241     0.99   0.359    -2669.554    6321.579
+                                                 gcf |   308.9119   37.32239     8.28   0.000     217.5873    400.2365
+                                   unemployment_rate |  -298.4749   61.42718    -4.86   0.003    -448.7818    -148.168
+                                  liquid_liabilities |  -90.41117   27.76075    -3.26   0.017    -158.3393   -22.48306
+                           dom_credit_to_private_sec |  -7.939656   5.400188    -1.47   0.192    -21.15344    5.274127
+                           stock_market_value_traded |  -33.90743   26.58197    -1.28   0.249    -98.95118    31.13631
+                                  remittance_inflows |   156.2725   83.36898     1.87   0.110    -47.72403     360.269
+                                         prod_growth |   5997.275   2611.538     2.30   0.061    -392.9278    12387.48
+                         EconomicFreedomSummaryIndex |   1464.176   806.6671     1.82   0.119    -509.6671     3438.02
                                                      |
-  c.primary_sector_fdi#c.EconomicFreedomSummaryIndex |   57521.54   13890.72     4.14   0.006     23532.17     91510.9
+  c.primary_sector_fdi#c.EconomicFreedomSummaryIndex |   21267.31   6849.019     3.11   0.021     4508.362    38026.26
                                                      |
-c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex |   44565.61   33204.18     1.34   0.228    -36682.08    125813.3
+c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex |   42778.92   15204.23     2.81   0.031     5575.495    79982.34
                                                      |
- c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex |  -16570.68   2429.421    -6.82   0.000    -22515.26    -10626.1
+ c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex |  -6720.678     2684.8    -2.50   0.046    -13290.15   -151.2088
                                                      |
-          c.primary_sector_fdi#c.tertiary_enrollment |   -1315.83   402.1271    -3.27   0.017    -2299.799   -331.8602
-                                                     |
-        c.secondary_sector_fdi#c.tertiary_enrollment |  -124.0498   1159.639    -0.11   0.918    -2961.583    2713.484
-                                                     |
-         c.tertiary_sector_fdi#c.tertiary_enrollment |    294.574   65.72867     4.48   0.004     133.7418    455.4063
-                                                     |
-                                          gdp_growth |  -123.7961   68.82581    -1.80   0.122    -292.2068    44.61455
-                                               _cons |   29537.17   9626.023     3.07   0.022     5983.136     53091.2
+                                          gdp_growth |  -187.6614   73.17234    -2.56   0.043    -366.7077   -8.615157
+                                               _cons |   34658.12   10310.72     3.36   0.015     9428.689    59887.56
 ----------------------------------------------------------------------------------------------------------------------
 
 
+. 
+. // Not needed afterall - the model is already significant without it 
+. 
+. // Experiment with the Human Capital 
+. // xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate 
+> inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_r
+> ate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_gro
+> wth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.Econo
+> micFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.sec
+> ondary_sector_fdi#c.tertiary_enrollment c.tertiary_sector_fdi#c.tertiary_enrollment gdp_growth, fe
+. 
+. // Experiment with the Human Capital DROPPING: IMPORTS CONTROL OF CORRUPTION, BANK DEPOSITS and HDI to validate findings in
+>  the absence of multicolinearity
+. // xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate 
+> inflation exports gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities 
+> dom_credit_to_private_sec stock_market_value_traded remittance_inflows prod_growth EconomicFreedomSummaryIndex c.primary_se
+> ctor_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.Economi
+> cFreedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.secondary_sector_fdi#c.tertiary_enrollment c.tertiary_sec
+> tor_fdi#c.tertiary_enrollment gdp_growth, fe
 . 
 . 
 . **************************************************
@@ -11984,5 +11932,5 @@ c.Economic~x |   0.1689   -0.1174   -0.5318    0.2363    0.3914    1.0000
       name:  <unnamed>
        log:  /Users/thomasedwards/projects/econ3900_analysis/project.log
   log type:  text
- closed on:   6 Apr 2025, 11:59:52
+ closed on:   6 Apr 2025, 12:51:21
 -----------------------------------------------------------------------------------------------------------------------------
