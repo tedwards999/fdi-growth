@@ -1,7 +1,7 @@
 
 log close _all 
 
-log using "/Users/thomasedwards/projects/econ3900_analysis/stata_assignment/thomas/files/project.log", replace 
+log using "/Users/thomasedwards/projects/econ3900_analysis/project.log", replace 
 
 ******************************
 *FDI Sectoral Split Data OECD*
@@ -2839,6 +2839,102 @@ rename ISOCode3 country_code
 
 save economic_freedom, replace 
 
+**********************
+* Tertiary Enrollment*
+**********************
+
+// Clear existing data from memory
+clear all 
+
+// Import the data
+import delimited using "/Users/thomasedwards/projects/econ3900_analysis/new_data/tertiary_enrollment/API_SE.TER.ENRR_DS2_en_csv_v2_14122.csv", varnames(5) rowrange(5:) colrange(:68)
+
+// Describe the data
+describe
+
+// Stata does not like integer column names 
+local start_year = 1960
+forvalues i = 5/68 {
+    rename v`i' tertiary_enrollment`start_year'
+    local start_year = `start_year' + 1
+}
+
+// Reshape the data
+reshape long tertiary_enrollment, i(countryname countrycode indicatorname indicatorcode) j(year) 
+
+// Drop redundant columns
+drop indicatorname indicatorcode
+
+// Drop redundant years  
+keep if year>=2005
+keep if year<=2019
+
+// Remove groupings and tiny countries
+drop if countryname == "(French part)"
+drop if countryname == "Africa Eastern and Southern"
+drop if countryname == "Africa Western and Central"
+drop if countryname == "Arab World"
+drop if countryname == "Caribbean small states"
+drop if countryname == "Central Europe and the Baltics"
+drop if countryname == "countries: UN classification"
+drop if countryname == "Early-demographic dividend"
+drop if countryname == "East Asia & Pacific"
+drop if countryname == "East Asia & Pacific (excluding high income)"
+drop if countryname == "East Asia & Pacific (IDA & IBRD countries)"
+drop if countryname == "Euro area"
+drop if countryname == "Europe & Central Asia"
+drop if countryname == "Europe & Central Asia (excluding high income)"
+drop if countryname == "Europe & Central Asia (IDA & IBRD countries)"
+drop if countryname == "European Union"
+drop if countryname == "Fragile and conflict affected situations"
+drop if countryname == "Heavily indebted poor countries (HIPC)"
+drop if countryname == "High income"
+drop if countryname == "IBRD only"
+drop if countryname == "ica & the Caribbean (IDA & IBRD countries)"
+drop if countryname == "IDA & IBRD total"
+drop if countryname == "IDA blend"
+drop if countryname == "IDA only"
+drop if countryname == "IDA total"
+drop if countryname == "Isle of Man"
+drop if countryname == "Late-demographic dividend"
+drop if countryname == "Latin America & Caribbean"
+drop if countryname == "Latin America & Caribbean (excluding high income)"
+drop if countryname == "Latin America & the Caribbean (IDA & IBRD countries)"
+drop if countryname == "Least developed"
+drop if countryname == "Least developed countries: UN classification"
+drop if countryname == "Low & middle income"
+drop if countryname == "Low income"
+drop if countryname == "Lower middle income"
+drop if countryname == "Micronesia, Fed. Sts."
+drop if countryname == "Middle East & North Africa"
+drop if countryname == "Middle East & North Africa (excluding high income)"
+drop if countryname == "Middle East & North Africa (IDA & IBRD countries)"
+drop if countryname == "Middle income"
+drop if countryname == "Northern Mariana Islands"
+drop if countryname == "Not classified"
+drop if countryname == "OECD members"
+drop if countryname == "Other small states"
+drop if countryname == "Other small states"
+drop if countryname == "Pacific island small states"
+drop if countryname == "Post-demographic dividend"
+drop if countryname == "Pre-demographic dividend"
+drop if countryname == "Small states"
+drop if countryname == "South Asia"
+drop if countryname == "South Asia (IDA & IBRD)"
+drop if countryname == "Sub-Saharan Africa"
+drop if countryname == "Sub-Saharan Africa (excluding high income)"
+drop if countryname == "Sub-Saharan Africa (IDA & IBRD countries)"
+drop if countryname == "Upper middle income"
+drop if countryname == "World"
+
+// Drop countries
+drop countryname
+
+// Rename for joining 
+rename countrycode country_code
+
+save tertiary_enrollment, replace
+
 *****************
 *Economic Growth*
 *****************
@@ -2935,7 +3031,6 @@ rename countrycode country_code
 
 save gdp_growth, replace
 
-
 *****************
 * Merge the data*
 *****************
@@ -3011,6 +3106,9 @@ drop _merge
 merge 1:1 country_code year using gdp_pc_level
 keep if inlist(_merge,1 ,3)
 drop _merge
+merge 1:1 country_code year using tertiary_enrollment
+keep if inlist(_merge,1 ,3)
+drop _merge
 
 // // Keep only years of interest
 // keep if year >= 2013
@@ -3028,12 +3126,12 @@ clear all
 // Use the main dataet created earlier
 use main
 
-vl create mainvars = (gdp_pc_level gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp gov_exp_edu cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex)
+vl create mainvars = (gdp_pc_level gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp gov_exp_edu cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex tertiary_enrollment)
 
 
 // Fill backward
    foreach var of varlist $mainvars { 
-	replace `var' = `var'[_n-1] if missing(`var')
+    replace `var' = `var'[_n-1] if missing(`var')
  }
  
 // Drop counties with too many missing data values
@@ -3044,18 +3142,15 @@ drop if country_code == "NZL"
 
 save final_dataset, replace
 
-****************************************************************************
-*Regressions small number of countries large number of observations Version*
-****************************************************************************
+**************************
+*Regressions Long Version*
+**************************
 
 // Clear the memory 
 clear all
 
 // Load the dataset
 use final_dataset
-
-// Keep years after 2005
-keep if year >= 2008
 
 // Keep the countries with obervations from 2008
 keep if inlist(country_code, "BGD", "BRN", "COL", "CPV", "EST", "FRA", "GEO", "GHA", "GTM") | inlist(country_code, "HUN", "IDN", "LTU", "LVA", "MEX", "MOZ", "MYS", "PAK", "PRT") | inlist(country_code, "PRY", "RWA", "SGP", "THA", "UGA")
@@ -3064,38 +3159,18 @@ keep if inlist(country_code, "BGD", "BRN", "COL", "CPV", "EST", "FRA", "GEO", "G
 *Descriptive Statistics*
 ************************
 
-// Visually inspect the statistics
-summarize gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level
-
-// Create an Excel file
-putexcel set "long_version_summary.xlsx", modify
-
-// Write the stats to excel
-local k = 1
-foreach x in gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level {
-    sum `x'
-   putexcel a`k' = "`x'"
-   putexcel b`k' = `r(N)'
-   putexcel c`k' = `r(mean)'
-   putexcel d`k' = `r(sd)'
-   putexcel e`k' = `r(min)'
-   putexcel f`k' = `r(max)'
-   local k = `k' + 1
-}
-
-// Save the excel File
-putexcel save
+summarize primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf gov_exp_edu unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows listed_per_million income_level prod_growth hdi_index EconomicFreedomSummaryIndex gdp_growth gdp_pc_level
 
 // Run the correlation analysis
-correlate gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level
+correlate 
 
 // List the output
 return list
 matrix list r(C)
 
-// Save to excel for presentation in our paper
-putexcel set "long_version_corr.xlsx", modify
+putexcel set "long_version.xlsx", modify
 putexcel A1=matrix(r(C)), names
+
 putexcel save
 
 ***************************
@@ -3104,59 +3179,10 @@ putexcel save
 
 ** Main Approach of interest
 
-// Clear the memory 
-clear all
-
-// Load the dataset
-use final_dataset
-
-// Keep only years of interest
-keep if year >= 2013
-keep if year <= 2019
-
-************************
-*Descriptive Statistics*
-************************
-
-// Visually inspect the statistics
-summarize gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level
-
-// Create an Excel file
-putexcel set "wide_version_summary.xlsx", modify
-
-// Write the stats to excel
-local k = 1
-foreach x in gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level {
-    sum `x'
-   putexcel a`k' = "`x'"
-   putexcel b`k' = `r(N)'
-   putexcel c`k' = `r(mean)'
-   putexcel d`k' = `r(sd)'
-   putexcel e`k' = `r(min)'
-   putexcel f`k' = `r(max)'
-   local k = `k' + 1
-}
-
-// Save the excel File
-putexcel save
-
-// Run the correlation analysis
-correlate gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex gdp_pc_level
-
-// List the output
-return list
-matrix list r(C)
-
-// Save to excel for presentation in our paper
-putexcel set "wide_version_corr.xlsx", modify
-putexcel A1=matrix(r(C)), names
-putexcel save
-
 **********************************
 * Dependent Variable = GDP GROWTH*
 * All Countries Sectoral Split.  *
 **********************************
-
 // Clear the memory 
 clear all
 
@@ -3173,7 +3199,6 @@ xtset iso_id year
 
 // Pooled OLS
 reg gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex
-
 
 // Pooled OLS with Economic Freedom Interaction Terms added 
 reg gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex
@@ -3204,9 +3229,8 @@ xtqptest
 // Fixed effects model with interaction terms and robust standard errors
 xtreg gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex, fe vce(robust)
 
-// Fixed effects model with interaction terms and robust standard errors + dropping imports, control of corruption, bank deposits and HDI
-xtreg gdp_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded remittance_inflows prod_growth EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex, fe vce(robust)
-
+// test for multicollinearity - no clear sign of it 
+estat vce, corr
 
 **********************************
 * Dependent Variable = GDP LEVEL *
@@ -3258,8 +3282,22 @@ xtqptest
 // Fixed effects model with interaction terms and robust standard errors
 xtreg gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex gdp_growth, fe vce(robust)
 
-// Fixed effects model with interaction terms and robust standard errors + dropping imports, control of corruption, bank deposits and HDI
-xtreg gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded remittance_inflows prod_growth EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex gdp_growth, fe vce(robust)
+// test for multicollinearity 
+estat vce, corr
+
+
+// Install the Driscoll Kraay Estimator
+// ssc install xtscc
+
+// Driscoll-Kraay Standard Errors to Correct for both Autocorrelation and heteroskedacticity
+xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex gdp_growth, fe
+
+
+// Experiment with the Human Capital 
+xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows prod_growth hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.secondary_sector_fdi#c.tertiary_enrollment c.tertiary_sector_fdi#c.tertiary_enrollment gdp_growth, fe
+
+// Experiment with the Human Capital DROPPING: IMPORTS CONTROL OF CORRUPTION, BANK DEPOSITS and HDI to validate findings in the absence of multicolinearity
+xtscc gdp_pc_level primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded remittance_inflows prod_growth EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex c.primary_sector_fdi#c.tertiary_enrollment c.secondary_sector_fdi#c.tertiary_enrollment c.tertiary_sector_fdi#c.tertiary_enrollment gdp_growth, fe
 
 
 **************************************************
@@ -3311,6 +3349,9 @@ xtqptest
 
 // Fixed effects model with interaction terms and robust standard errors
 xtreg prod_growth primary_sector_fdi secondary_sector_fdi tertiary_sector_fdi gini tax_rev save_perc_gdp interest_rate inflation exports imports con_corruption gov_exp cen_gov_debt curr_acc_bal stock_market_tor rol_estimate gcf unemployment_rate liquid_liabilities dom_credit_to_private_sec stock_market_value_traded bank_deposits_to_gdp remittance_inflows hdi_index EconomicFreedomSummaryIndex c.primary_sector_fdi#c.EconomicFreedomSummaryIndex c.secondary_sector_fdi#c.EconomicFreedomSummaryIndex c.tertiary_sector_fdi#c.EconomicFreedomSummaryIndex gdp_growth, fe vce(robust)
+
+// test for multicollinearity - no clear sign of it 
+estat vce, corr
 
 // close the log
 log close _all
